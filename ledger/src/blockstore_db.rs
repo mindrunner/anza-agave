@@ -1465,7 +1465,7 @@ impl Database {
             .backend
             .get_pinned_cf(self.cf_handle::<C>(), &C::key(key))?
         {
-            let value = deserialize(pinnable_slice.as_ref())?;
+            let value = C::deserialize(pinnable_slice.as_ref())?;
             Ok(Some(value))
         } else {
             Ok(None)
@@ -1721,36 +1721,16 @@ where
     where
         I: IntoIterator<Item = C::Index>,
     {
-<<<<<<< HEAD
         let keys: Vec<_> = keys.into_iter().map(C::key).collect();
         {
             let is_perf_enabled = maybe_enable_rocksdb_perf(
                 self.column_options.rocks_perf_sample_interval,
                 &self.read_perf_status,
-=======
-        let is_perf_enabled = maybe_enable_rocksdb_perf(
-            self.column_options.rocks_perf_sample_interval,
-            &self.read_perf_status,
-        );
-
-        let result = self
-            .backend
-            .multi_get_cf(self.handle(), keys)
-            .map(|out| out?.as_deref().map(C::deserialize).transpose());
-
-        if let Some(op_start_instant) = is_perf_enabled {
-            // use multi-get instead
-            report_rocksdb_read_perf(
-                C::NAME,
-                PERF_METRIC_OP_NAME_MULTI_GET,
-                &op_start_instant.elapsed(),
-                &self.column_options,
->>>>>>> f8e5b1672 (Blockstore: Migrate ShredIndex type to more efficient data structure (#3900))
             );
             let result = self
                 .backend
                 .multi_get_cf(self.handle(), &keys)
-                .map(|out| Ok(out?.as_deref().map(deserialize).transpose()?))
+                .map(|out| out?.as_deref().map(C::deserialize).transpose())
                 .collect::<Vec<Result<Option<_>>>>();
             if let Some(op_start_instant) = is_perf_enabled {
                 // use multi-get instead
@@ -1813,20 +1793,6 @@ where
         }
         result
     }
-<<<<<<< HEAD
-=======
-
-    pub fn put_in_batch(
-        &self,
-        batch: &mut WriteBatch,
-        index: C::Index,
-        value: &C::Type,
-    ) -> Result<()> {
-        let key = Self::key_from_index(index);
-        let serialized_value = C::serialize(value)?;
-        batch.put_cf(self.handle(), &key, &serialized_value)
-    }
->>>>>>> f8e5b1672 (Blockstore: Migrate ShredIndex type to more efficient data structure (#3900))
 }
 
 impl<C> LedgerColumn<C>
@@ -1973,7 +1939,7 @@ impl<'a> WriteBatch<'a> {
         key: C::Index,
         value: &C::Type,
     ) -> Result<()> {
-        let serialized_value = serialize(&value)?;
+        let serialized_value = C::serialize(value)?;
         self.write_batch
             .put_cf(self.get_cf::<C>(), C::key(key), serialized_value);
         Ok(())
@@ -2433,13 +2399,8 @@ pub mod tests {
     where
         C: ColumnIndexDeprecation + TypedColumn + ColumnName,
     {
-<<<<<<< HEAD
         pub fn put_deprecated(&self, key: C::DeprecatedIndex, value: &C::Type) -> Result<()> {
-            let serialized_value = serialize(value)?;
-=======
-        pub fn put_deprecated(&self, index: C::DeprecatedIndex, value: &C::Type) -> Result<()> {
             let serialized_value = C::serialize(value)?;
->>>>>>> f8e5b1672 (Blockstore: Migrate ShredIndex type to more efficient data structure (#3900))
             self.backend
                 .put_cf(self.handle(), &C::deprecated_key(key), &serialized_value)
         }
