@@ -19,9 +19,9 @@ name = "solana_ledger"
 [features]
 dev-context-only-utils = ["solana-perf/dev-context-only-utils"]
 frozen-abi = [
-    "dep:solana-frozen-abi",
-    "dep:solana-frozen-abi-macro",
-    "solana-runtime/frozen-abi",
+  "dep:solana-frozen-abi",
+  "dep:solana-frozen-abi-macro",
+  "solana-runtime/frozen-abi",
 ]
 agave-unstable-api = []
 
@@ -70,10 +70,10 @@ solana-cost-model = { workspace = true }
 solana-entry = { workspace = true }
 solana-epoch-schedule = { workspace = true }
 solana-frozen-abi = { workspace = true, optional = true, features = [
-    "frozen-abi",
+  "frozen-abi",
 ] }
 solana-frozen-abi-macro = { workspace = true, optional = true, features = [
-    "frozen-abi",
+  "frozen-abi",
 ] }
 solana-genesis-config = { workspace = true }
 solana-hash = { workspace = true }
@@ -127,7 +127,7 @@ trees = { workspace = true }
 [dependencies.rocksdb]
 # Avoid the vendored bzip2 within rocksdb-sys that can cause linker conflicts
 # when also using the bzip2 crate
-version = "0.23.0"
+version = "0.24.0"
 default-features = false
 features = ["lz4"]
 
@@ -137,7 +137,10 @@ criterion = { workspace = true }
 proptest = { workspace = true }
 solana-account-decoder = { workspace = true }
 # See order-crates-for-publishing.py for using this unusual `path = "."`
-solana-ledger = { path = ".", features = ["dev-context-only-utils", "agave-unstable-api"] }
+solana-ledger = { path = ".", features = [
+  "dev-context-only-utils",
+  "agave-unstable-api",
+] }
 solana-logger = { workspace = true }
 solana-net-utils = { workspace = true, features = ["dev-context-only-utils"] }
 solana-perf = { workspace = true, features = ["dev-context-only-utils"] }
